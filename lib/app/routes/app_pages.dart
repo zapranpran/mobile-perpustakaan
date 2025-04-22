@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:perpustakaan/app/modules/profile/bindings/profile_binding.dart';
 
 import '../modules/dashboard/bindings/dashboard_binding.dart';
 import '../modules/dashboard/views/dashboard_view.dart';
@@ -39,9 +40,9 @@ class AppPages {
       binding: DashboardBinding(),
     ),
     GetPage(
-      name: _Paths.PROFILE,
+      name: '/profile',
       page: () => ProfileView(),
-      binding: DashboardBinding(),
-    ),
+      binding: ProfileBinding(),
+    )
   ];
 }

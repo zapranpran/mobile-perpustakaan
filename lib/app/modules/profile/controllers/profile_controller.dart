@@ -6,11 +6,11 @@ import 'package:perpustakaan/app/utils/api.dart';
 class ProfileController extends GetxController {
   final box = GetStorage();
   final _getConnect = GetConnect();
-  final token = GetStorage().read('token');
+  final token = GetStorage().read('auth_token'); // Samakan dengan login
   final isLoading = false.obs;
-  
-  // Variabel untuk menyimpan profil
-  var profile = Profiles().obs;
+
+  // Variabel untuk menyimpan satu profil
+  var profile = Profile().obs;
 
   @override
   void onInit() {
@@ -26,14 +26,12 @@ class ProfileController extends GetxController {
         headers: {'Authorization': "Bearer $token"},
       );
 
-      // if (response.statusCode == 200) {
-      //   var profileResponse = ProfileResponse.fromJson(response.body);
-      //   profiles.value = profileResponse.profiles ?? Profiles();
-      // } else {
-      //   print("Failed to load profile: ${response.statusText}");
-      // }
+      if (response.statusCode == 200) {
+        var profileResponse = ProfileResponse.fromJson(response.body);
+        profile.value = profileResponse.profile ?? Profile();
+      }
     } catch (e) {
-      print("Error: $e");
+      print("Error fetching profile: $e");
     } finally {
       isLoading(false);
     }
@@ -44,5 +42,3 @@ class ProfileController extends GetxController {
     Get.offAllNamed('/login');
   }
 }
-
-

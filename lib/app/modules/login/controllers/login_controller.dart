@@ -12,43 +12,44 @@ class LoginController extends GetxController {
   final authToken = GetStorage();
 
   void loginNow() async {
-    final response = await _getConnect.post(BaseUrl.login, {
-      'email': emailController.text,
-      'password': passwordController.text,
-    });
+  final response = await _getConnect.post(BaseUrl.login, {
+    'email': emailController.text,
+    'password': passwordController.text,
+  });
 
-    print('🚀 LOGIN RESPONSE: ${response.body}');
+  print('🚀 LOGIN RESPONSE: ${response.body}');
 
-    if (response.statusCode == 200) {
-      final accessToken = response.body['access_token'];
-      print('✅ TOKEN YANG DITERIMA DARI BACKEND: $accessToken');
+  if (response.statusCode == 200) {
+    final accessToken = response.body['access_token'];
+    print('✅ TOKEN YANG DITERIMA DARI BACKEND: $accessToken');
 
-      // SIMPAN TOKEN
-      await authToken.write('auth_token', accessToken);
+    // SIMPAN TOKEN
+    await authToken.write('access_token', accessToken);
 
-      // CEK TOKEN UDAH TERSIMPAN BELUM
-      final cekToken = authToken.read('auth_token');
-      print('📦 TOKEN YANG UDAH DISIMPAN: $cekToken');
+    // CEK TOKEN SUDAH TERSIMPAN
+    final cekToken = authToken.read('access_token');
+    print('📦 TOKEN YANG SUDAH DISIMPAN: $cekToken');
 
-      // Navigasi ke DashboardView PASTIKAN BINDING DIPANGGIL
-      Get.offAllNamed('/dashboard');
-    } else {
-      final errorMessage =
-          (response.body is Map && response.body['error'] != null)
-              ? response.body['error'].toString()
-              : 'Login gagal. Coba lagi.';
+    // Navigasi ke DashboardView PASTIKAN BINDING DIPANGGIL
+    Get.offAllNamed('/dashboard');
+  } else {
+    final errorMessage =
+        (response.body is Map && response.body['error'] != null)
+            ? response.body['error'].toString()
+            : 'Login gagal. Coba lagi.';
 
-      Get.snackbar(
-        'Error',
-        errorMessage,
-        icon: const Icon(Icons.error),
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        forwardAnimationCurve: Curves.bounceIn,
-        margin: const EdgeInsets.only(top: 10, left: 5, right: 5),
-      );
-    }
+    Get.snackbar(
+      'Error',
+      errorMessage,
+      icon: const Icon(Icons.error),
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+      forwardAnimationCurve: Curves.bounceIn,
+      margin: const EdgeInsets.only(top: 10, left: 5, right: 5),
+    );
   }
+}
+
 
   @override
   void onClose() {

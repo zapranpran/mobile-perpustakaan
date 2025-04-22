@@ -9,181 +9,152 @@ class BukuDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     final Bukus buku = Get.arguments;
 
-    String baseUrl = "https://domain-kamu.com/storage/images/";
     String imageUrl = buku.foto != null && buku.foto!.isNotEmpty
-        ? baseUrl + buku.foto!
+        ? 'http://127.0.0.1:8000/img/${buku.foto}'
         : 'https://via.placeholder.com/600x300?text=No+Image';
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF0F4F8),
       appBar: AppBar(
         title: Text(
-          buku.judul ?? 'Judul tidak ditemukan',
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          buku.judul ?? 'Detail Buku',
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
+        backgroundColor: Colors.green[700],
         elevation: 0,
-        backgroundColor: Colors.white24,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Gambar Buku
-              Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    imageUrl,
-                    height: 250,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 250,
-                        width: double.infinity,
-                        color: Colors.grey[300],
-                        child: const Center(
-                          child: Text("Gambar tidak ditemukan"),
-                        ),
-                      );
-                    },
-                  ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Hero(
+              tag: 'buku-${buku.id}',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.network(
+                  imageUrl,
+                  width: double.infinity,
+                  height: 220,
+                  fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(height: 24),
+            ),
+            const SizedBox(height: 20),
 
-              // Judul Buku
-              Text(
-                buku.judul ?? 'Judul tidak ditemukan',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-
-              // Informasi Buku
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
+            // Informasi Buku
+            Material(
+              elevation: 3,
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    detailRow('Penulis', buku.penulis?.namaPenulis ?? 'Tidak diketahui'),
-                    detailRow('Penerbit', buku.penerbit?.namaPenerbit ?? 'Tidak diketahui'),
-                    detailRow('Kategori', buku.kategori?.namaKategori ?? 'Tidak diketahui'),
-                    detailRow('Jumlah Buku', '${buku.jumlah ?? 0}'),
+                    Text(
+                      buku.judul ?? 'Judul tidak tersedia',
+                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    detailInfo(Icons.person, 'Penulis', buku.penulis?.namaPenulis ?? 'Tidak diketahui'),
+                    detailInfo(Icons.library_books, 'Kategori', buku.kategori?.namaKategori ?? 'Tidak diketahui'),
+                    detailInfo(Icons.business, 'Penerbit', buku.penerbit?.namaPenerbit ?? 'Tidak diketahui'),
+                    detailInfo(Icons.calendar_today, 'Tahun Terbit', buku.tahunTerbit ?? 'Tidak diketahui'),
+                    detailInfo(Icons.inventory_2, 'Jumlah Buku', '${buku.jumlah ?? 0}'),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+            ),
 
-              // Sinopsis Buku
-              const Text(
-                'Sinopsis',
+            const SizedBox(height: 24),
+
+            // Sinopsis
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '📖 Sinopsis',
                 style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
+                  color: Colors.green[700],
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                buku.sinopsis ?? 'Sinopsis tidak tersedia',
-                textAlign: TextAlign.justify,
-                style: const TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+            const SizedBox(height: 10),
+            Material(
+              elevation: 2,
+              borderRadius: BorderRadius.circular(16),
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  buku.sinopsis ?? 'Sinopsis tidak tersedia',
+                  textAlign: TextAlign.justify,
+                  style: const TextStyle(fontSize: 15),
+                ),
               ),
-              const SizedBox(height: 32),
+            ),
 
-              // Tombol Aksi
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  SizedBox(
-                    width: 140,
-                    height: 48,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[400],
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () => Get.back(),
-                      icon: const Icon(Icons.arrow_back),
-                      label: const Text('Kembali'),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 140,
-                    height: 48,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () {
-                        Get.snackbar(
-                          'Pinjam Buku',
-                          'Buku "${buku.judul ?? ''}" berhasil dipinjam!',
-                          snackPosition: SnackPosition.TOP,
-                          backgroundColor: Colors.deepPurple[100],
-                          colorText: Colors.black,
-                        );
-                      },
-                      icon: const Icon(Icons.book),
-                      label: const Text('Pinjam'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            const SizedBox(height: 30),
+
+            // Tombol Aksi
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                actionButton(Icons.arrow_back, "Kembali", Colors.grey.shade400, () {
+                  Get.back();
+                }),
+                actionButton(Icons.book, "Pinjam", Colors.green, () {
+                  Get.snackbar(
+                    'Peminjaman Berhasil',
+                    'Buku "${buku.judul ?? ''}" berhasil dipinjam!',
+                    backgroundColor: Colors.green[100],
+                    icon: const Icon(Icons.check_circle, color: Colors.green),
+                    snackPosition: SnackPosition.TOP,
+                    margin: const EdgeInsets.all(12),
+                  );
+                }),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget detailRow(String label, String value) {
+  Widget detailInfo(IconData icon, String title, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              '$label:',
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
+          Icon(icon, size: 18, color: Colors.green[600]),
+          const SizedBox(width: 10),
+          Text(
+            "$title: ",
+            style: const TextStyle(fontWeight: FontWeight.w600),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(color: Colors.black54),
-            ),
+            child: Text(value),
           ),
         ],
       ),
+    );
+  }
+
+  Widget actionButton(IconData icon, String label, Color color, VoidCallback onTap) {
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 2,
+      ),
+      onPressed: onTap,
+      icon: Icon(icon),
+      label: Text(label),
     );
   }
 }

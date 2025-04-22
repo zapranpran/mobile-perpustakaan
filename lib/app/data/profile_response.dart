@@ -1,45 +1,41 @@
 class ProfileResponse {
   bool? success;
   String? message;
-  List<Profiles>? profiles;
+  Profile? profile;
 
-  ProfileResponse({this.success, this.message, this.profiles});
+  ProfileResponse({this.success, this.message, this.profile});
 
   ProfileResponse.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    if (json['profiles'] != null) {
-      profiles = <Profiles>[];
-      json['profiles'].forEach((v) {
-        profiles!.add(new Profiles.fromJson(v));
-      });
-    }
+    profile =
+        json['profile'] != null ? new Profile.fromJson(json['profile']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['success'] = this.success;
     data['message'] = this.message;
-    if (this.profiles != null) {
-      data['profiles'] = this.profiles!.map((v) => v.toJson()).toList();
+    if (this.profile != null) {
+      data['profile'] = this.profile!.toJson();
     }
     return data;
   }
 }
 
-class Profiles {
+class Profile {
   int? id;
   String? name;
   String? address;
   String? noHp;
-  Null? fotoprofile;
+  String? fotoprofile;
   String? email;
   String? emailVerifiedAt;
   int? isAdmin;
   String? createdAt;
   String? updatedAt;
 
-  Profiles(
+  Profile(
       {this.id,
       this.name,
       this.address,
@@ -51,7 +47,7 @@ class Profiles {
       this.createdAt,
       this.updatedAt});
 
-  Profiles.fromJson(Map<String, dynamic> json) {
+  Profile.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     address = json['address'];
